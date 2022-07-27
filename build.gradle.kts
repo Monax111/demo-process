@@ -28,6 +28,7 @@ dependencies {
     implementation("com.h2database:h2")
     implementation(group = "org.postgresql", name = "postgresql", version = "42.4.0")
     implementation(group = "org.testcontainers", name = "postgresql", version = "1.17.2")
+    implementation(group = "org.liquibase", name = "liquibase-core", version = "4.9.1")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -73,5 +74,14 @@ tasks {
         }
     }
 
-}
+    val serviceTest = register<Test>("serviceTest"){
+        useJUnitPlatform {
+            includeTags.add("service")
+        }
+    }
 
+    check{
+        dependsOn(serviceTest)
+    }
+
+}
