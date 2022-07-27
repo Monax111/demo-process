@@ -3,6 +3,10 @@ spring:
     name: best-process
   datasource:
     url: jdbc:tc:postgresql:11:///test
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
 
 server:
   port: 8080
@@ -10,14 +14,20 @@ server:
     context-path: /${spring.application.name}
   error:
     include-stacktrace: always
-    nclude-message: always
+    include-message: always
 
 logging:
   level:
     root: info
 
-host: http://localhost:8080
-
-rest:
-  scoring:
-    url: ${host}/scoring/score
+# Spring Boot Actuator settings
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'info, health, metrics, prometheus, heapdump, scheduledtasks, logfile, loggers, mappings'
+  info:
+    git.mode: full
+  endpoint:
+    health:
+      show-details: always
