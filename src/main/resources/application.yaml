@@ -1,6 +1,8 @@
 spring:
   application:
     name: best-process
+  datasource:
+    url: jdbc:tc:postgresql:11:///test
 
 server:
   port: 8080

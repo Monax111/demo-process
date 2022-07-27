@@ -23,8 +23,12 @@ dependencies {
     api(platform("org.springframework.boot:spring-boot-dependencies:2.7.2"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("com.h2database:h2")
+    implementation(group = "org.postgresql", name = "postgresql", version = "42.4.0")
+    implementation(group = "org.testcontainers", name = "postgresql", version = "1.17.2")
+
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
