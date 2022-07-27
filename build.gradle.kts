@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.testcontainers.containers.PostgreSQLContainerProvider
 
 plugins {
     id("org.springframework.boot") version "2.7.2"
@@ -28,7 +29,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("com.h2database:h2")
     implementation(group = "org.postgresql", name = "postgresql", version = "42.4.0")
-    implementation(group = "org.testcontainers", name = "postgresql", version = "1.17.2")
+
 
     liquibaseRuntime("org.liquibase:liquibase-core:4.11.0")
     liquibaseRuntime("info.picocli:picocli:4.6.3")
@@ -59,9 +60,9 @@ tasks.withType<KotlinCompile> {
 
 tasks {
 
-	wrapper{
-		gradleVersion = "7.4"
-	}
+    wrapper {
+        gradleVersion = "7.4"
+    }
 
     test {
         useJUnitPlatform {
@@ -69,7 +70,7 @@ tasks {
         }
     }
 
-    check{
+    check {
         dependsOn(verifyLogic)
     }
 
@@ -79,27 +80,44 @@ tasks {
         }
     }
 
-    val serviceTest = register<Test>("serviceTest"){
+
+    val container = PostgreSQLContainerProvider().newInstance("11")
+
+    val serviceTest = register<Test>("serviceTest") {
+        dependsOn(update)
         useJUnitPlatform {
             includeTags.add("service")
+            doFirst {
+                environment["SPRING_DATASOURCE_URL"] = "jdbc:postgresql://localhost:${container.getMappedPort(5432)}/test"
+            }
         }
     }
 
-    check{
+    check {
         dependsOn(serviceTest)
     }
 
+
+
+    update {
+        doFirst {
+            container.start()
+
+            liquibase {
+                activities.create("main") {
+                    arguments = mapOf(
+                        "logLevel" to "info",
+                        "changeLogFile" to "liquidbase/db.changelog-master.yaml",
+                        "url" to "jdbc:postgresql://localhost:${container.getMappedPort(5432)}/test",
+                        "username" to "test",
+                        "password" to "test",
+                        "driver" to "org.postgresql.Driver"
+                    )
+                }
+            }
+        }
+    }
+
 }
 
-liquibase{
-    activities.create("main"){
-        arguments = mapOf(
-            "logLevel" to "info",
-            "changeLogFile" to "liquidbase/db.changelog-master.yaml",
-            "url" to "jdbc:postgresql://localhost:52765/test",
-            "username" to "test",
-            "password" to "test",
-            "driver" to "org.postgresql.Driver"
-        )
-    }
-}
+
