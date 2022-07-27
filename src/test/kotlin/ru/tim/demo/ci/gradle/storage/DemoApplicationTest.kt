@@ -3,6 +3,7 @@ package ru.tim.demo.ci.gradle.storage
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,6 +13,7 @@ import ru.tim.demo.ci.gradle.storage.model.PersonDto
 
 
 @SpringBootTest
+@Tag("service")
 class DemoApplicationTest {
 
     @Autowired
