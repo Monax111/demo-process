@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.jpa") version "1.6.21"
     jacoco
     id("ru.tim.demo.ci.gradle.plugin") version "1.0.0"
+    id("org.liquibase.gradle") version "2.1.0"
 }
 
 group = "ru.tim.demo.ci.gradle"
@@ -28,7 +29,11 @@ dependencies {
     implementation("com.h2database:h2")
     implementation(group = "org.postgresql", name = "postgresql", version = "42.4.0")
     implementation(group = "org.testcontainers", name = "postgresql", version = "1.17.2")
-    implementation(group = "org.liquibase", name = "liquibase-core", version = "4.9.1")
+
+    liquibaseRuntime("org.liquibase:liquibase-core:4.11.0")
+    liquibaseRuntime("info.picocli:picocli:4.6.3")
+    liquibaseRuntime(group = "org.postgresql", name = "postgresql", version = "42.4.0")
+    liquibaseRuntime("org.yaml:snakeyaml:1.29")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -84,4 +89,17 @@ tasks {
         dependsOn(serviceTest)
     }
 
+}
+
+liquibase{
+    activities.create("main"){
+        arguments = mapOf(
+            "logLevel" to "info",
+            "changeLogFile" to "liquidbase/db.changelog-master.yaml",
+            "url" to "jdbc:postgresql://localhost:52765/test",
+            "username" to "test",
+            "password" to "test",
+            "driver" to "org.postgresql.Driver"
+        )
+    }
 }
