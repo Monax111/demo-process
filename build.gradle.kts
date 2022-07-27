@@ -6,6 +6,7 @@ plugins {
     kotlin("plugin.spring") version "1.6.21"
     kotlin("plugin.jpa") version "1.6.21"
     jacoco
+    id("ru.tim.demo.ci.gradle.plugin") version "1.0.0"
 }
 
 group = "ru.tim.demo.ci.gradle"
@@ -56,7 +57,10 @@ tasks {
         useJUnitPlatform {
             excludeTags.add("service")
         }
+    }
 
+    check{
+        dependsOn(verifyLogic)
     }
 
     jacocoTestReport {
